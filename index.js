@@ -25,7 +25,7 @@ if (!Array.isArray(config)) {
   malformedConfig();
 }
 
-config.forEach(({ button, mac, integrations }) => {
+config.forEach(({ button, mac, integrations, options }) => {
   button = button || mac;
 
   if (!mac) {
@@ -57,6 +57,6 @@ config.forEach(({ button, mac, integrations }) => {
 
   const dash = dashButton(mac);
   dash.on("detected", () => {
-    integrationFunctions.forEach(fn => fn(button));
+    integrationFunctions.forEach(fn => fn(button, options));
   });
 });
