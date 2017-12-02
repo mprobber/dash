@@ -8,11 +8,13 @@ function malformedConfig() {
 
 let config;
 
-const configFile = process.argv[1];
+const configFile = process.argv[2];
+
 if (!configFile) {
-  console.log(`Usage: ${process.argv[0]} <config-file>`);
+  console.log("Usage: yarn start <config-file>");
   process.exit(1);
 }
+
 try {
   config = JSON.parse(readFileSync(configFile));
 } catch (e) {
@@ -33,7 +35,7 @@ config.forEach(({ button, mac, integrations }) => {
     return;
   }
 
-  if (!integrations || Array.isArray(integrations)) {
+  if (!integrations || !Array.isArray(integrations)) {
     console.log(`No integrations found for ${button}... skipping`);
     return;
   }
@@ -53,6 +55,8 @@ config.forEach(({ button, mac, integrations }) => {
     })
     .filter(Boolean);
 
-  const dash = dashButton(button);
-  dash.on("detected", () => integrationFunctions.forEach(fn => fn(button)));
+  const dash = dashButton(mac);
+  dash.on("detected", () => {
+    integrationFunctions.forEach(fn => fn(button));
+  });
 });

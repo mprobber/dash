@@ -13,10 +13,11 @@ The config is pretty simple. It's a json file of the following format
 ```json
 [
   {
-    "button": "<MAC ADDRESS>",
+    "button": "<Button name or descriptor>",
+    "mac": "<MAC ADDRESS>",
     "integrations": ["<INTEGRATION NAME>", "<INTEGRATION NAME>"]
   }
-];
+]
 ```
 
 Integrations can be found in `lib/integrations`
