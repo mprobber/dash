@@ -23,27 +23,36 @@ if (!Array.isArray(config)) {
   malformedConfig();
 }
 
-config.forEach(({ button, integrations }) => {
-  if (!button) {
+config.forEach(({ button, mac, integrations }) => {
+  button = button || mac;
+
+  if (!mac) {
     console.log(
       "You need to provide a MAC address for the button for it to work..."
     );
     return;
   }
+
   if (!integrations || Array.isArray(integrations)) {
     console.log(`No integrations found for ${button}... skipping`);
     return;
   }
 
-  const dash = dashButton(button);
-  dash.on("detected", () => {
-    integrations.forEach(integration => {
+  const integrationFunctions = integrations
+    .map(integration => {
       try {
-        const integrationFunction = require(`./lib/${integration}`);
-        integrationFunction();
+        return require(`./lib/${integration}`);
       } catch (e) {
-        console.log(`Could not run integration ${integration}`);
+        console.log(
+          `Could not load integration ${integration} for button ${
+            button
+          }... skipping.`
+        );
+        return;
       }
-    });
-  });
+    })
+    .filter(Boolean);
+
+  const dash = dashButton(button);
+  dash.on("detected", () => integrationFunctions.forEach(fn => fn(button)));
 });
